@@ -18,14 +18,18 @@
     <div id="body">
       <div id="left">
         <div class="box">
+          <!-- 左侧的选择聊天的对象 -->
           <select v-model="to" name="" id="">
             <option value="">群发所有好友</option>
             <option v-for="(v,k) in userlist[0]" :value="k">{{k}}=>{{v}}</option>
           </select>
+
+          <!-- 右侧显示所有好友 -->
           <h3 class="h3 h3_2">所有好友(
             <span class="n_geshu_2"></span>)</h3>
-
+            
           <ul class="ul ul_2">
+
             <?php foreach($users as $user){?>
             <li @click="choose()">
               <?=$user['uname']?>
@@ -40,7 +44,9 @@
           <div id="right_top">
           </div>
           <div id="right_mid"></div>
-          <div id="right_foot">蛋蛋</div>
+          <!-- 右侧的登录者信息显示 -->
+          <div id="right_foot"></div>
+
           <div class="blank"></div>
         </div>
         <div class="right_box_foot"></div>
@@ -51,21 +57,26 @@
             <div class="con_box">
               <div class="dandan_liaotian">
                 <img style="vertical-align:middle;width:30px;" src="/images/head.jpg" />
+                <!-- v-if 判断是群聊还是私聊 聊天对象头-->
                 <span v-if=to==''>
                   <?php echo $_COOKIE['uname']?>
                   的群聊框
                 </span>
+
                 <span v-else-if=to!=''>
                     <?php echo $_COOKIE['uname']?>
                     对
                     {{userlist[0][to]}}
                     的私聊框
                   </span>
+
+                <!-- v-if 判断是群聊还是私聊  消息框 -->
                 <li v-if=to=='' v-for="(v,k) in message[0]">
                   <?=$_COOKIE['uname']?> :
                     <?=date('Y-m-d:h:i:s')?>
                       <p style="color:red;">{{v}}</p>
                 </li>
+
                 <li v-if=to!='' v-for="(v,k) in person">
                     <template v-for='(v1,k1) in v[to]'>
                     <?=$_COOKIE['uname']?> :
@@ -73,6 +84,7 @@
                         <p style="color:red;">{{v1}}</p>
                     </template>
                 </li>
+
               </div>
             </div>
           </div>
@@ -116,22 +128,21 @@
 
       person:[],//私聊的信息
 
-      now:''//当前私聊聊天者的信息
-
     },
+    //钩子函数之一,实例被创建之后被调用,用来初始化数据
     created: function () {
-
+      //连接workerman服务器
       this.ws = new WebSocket('ws://127.0.0.1:9999?own_info=' + '<?php echo $own_info; ?>');
-
+      //绑定服务器连接监听函数
       this.ws.onopen = this.open;
-
+      //绑定服务器消息响应监听函数      
       this.ws.onmessage = this.messages;
     },
-
+    //vue  框架的函数存放在这里
     methods: {
-
+      //发送按钮
       submit: function () {
-
+        //判断是否是群发还是私聊
         if(this.to==''){
 
              this.ws.send("all:"+this.content);
@@ -147,17 +158,23 @@
         }
 
       },
+      //选择好友按钮
+      choose:function(){
 
+        alert("此功能需后期完善!");
+
+      },
+      //连接上聊天室的提示函数
       open: function () {
 
         alert('欢迎你<?= $_COOKIE["uname"]?>!!!');
 
       },
-
+      //接收响应数据的函数
       messages: function (e) {
 
-        var data = JSON.parse(e.data);
-       
+        var data = JSON.parse(e.data);//处理数据
+        //判断数据类型
         if (data.type == 'users') {
          
           this.userlist = [];
@@ -173,8 +190,6 @@
         }else{
 
           this.person = data;
-
-          console.log(this.person.person);
           
         }
 

@@ -2,7 +2,7 @@
     namespace controllers;
 
     use libs\DB;
-  
+   
     class UserController{
 
         public $db=null;
@@ -12,7 +12,7 @@
             $this->db = DB::make();
 
         }
-
+        //加载用户列表视图
         function userlist(){
         
             $psm = $this->db->prepare("select * from users");
@@ -35,10 +35,10 @@
 
            $user = $psm->fetch();
 
-           view("users.edit_user",['user'=>$user]);
+           view("users.edit_user",['user'=>$user]);//编辑用户
 
         }
-
+        //编辑用户时对数据用户名唯一性的判断 ajax
         function check_uname(){
          
             $uname = $_GET['uname'];
@@ -62,7 +62,7 @@
             }
 
         }
-
+         //编辑用户时对数据电话号码唯一性的判断 ajax
         function check_tel_num(){
 
             $tel_num = $_GET['tel_num'];
@@ -86,7 +86,7 @@
             }
 
         }
-
+        //执行更新数据库的操作
         function update(){
 
             $old_password = md5($_POST['old_password']);
@@ -122,7 +122,7 @@
             }
 
         }
-
+        //删除一个用户
         function delete(){
 
             $uid = $_GET['uid'];

@@ -34,18 +34,16 @@
 
             global  $worker,$users,$message,$connect;
 
-            // 把这个客户端保存到users数组
+                $own_info = json_decode($_GET['own_info'],true);//接收客户端连接时传过来数据
 
-                $own_info = json_decode($_GET['own_info'],true);
+                $connection->uname = $own_info['uname'];//向客户端添加数据
 
-                $connection->uname = $own_info['uname'];
-
-                $connection->uid = $own_info['uid'];
+                $connection->uid = $own_info['uid'];//向客户端添加数据
               
                 $users[$own_info['uid']]= $own_info['uname'];//保存连接者的名字
 
                 $connect[$own_info['uid']]= $connection;//保存连接者的客户端
-
+                //连接成功,向所有的上线玩家发送玩家信息
                 foreach($worker->connections as $c){
 
                     $c->send(json_encode([
@@ -55,7 +53,7 @@
                         'users'=>$users,
 
                     ]));
-
+                    //初始化群聊信息
                     foreach($worker->connections as $c)
                     {
                         $c->send(json_encode([
@@ -70,37 +68,37 @@
 
           };
     };
-
+    //接收客户端的信息,并进行响应
     $worker->onMessage = function($connection,$data){
         
         global  $worker,$message,$connect,$person;     
         
-        $data_arr = explode(':',$data);
-        
+        $data_arr = explode(':',$data);//分解数据
+        //判断当前的而用户时群发还是私发
         if($data_arr[0]=='all'){
             
             $message[]=$data_arr[1];
 
-         // 循环所有的客户端，给它们发消息
+         // 循环所有的客户端，响应消息
          foreach($worker->connections as $c)
          {
              $c->send(json_encode([
               'type'=>'message',
               'message'=>$message,
-                       ]));
+            ]));
          }             
 
         }else{
+            //私聊
+            $code = (int)$data_arr[0];//获取私聊对象的uid
 
-            $code = (int)$data_arr[0];
-
-            $person[$code][]=$data_arr[1];
-
+            $person[$code][]=$data_arr[1];//存放私聊的消息
+            //向聊天对象发消息
             $connect[$code]->send(json_encode([
                 'type'=>'person',
                 'person'=>$person,
              ]));
-                    
+            //响应自己的客户端
              $connection->send(json_encode([
                 'type'=>'person',
                 'person'=>$person,
@@ -112,22 +110,22 @@
 
     //当有客户端断开连接的时候
 
-    $worker->onClose = function($connection){
-        //从用户表里面删除这个用户
-        global $worker,$users;
+    // $worker->onClose = function($connection){
+    //     //从用户表里面删除这个用户
+    //     global $worker,$users;
     
-        unset($users['name'][$connection->id]);
+    //     unset($users['name'][$connection->id]);
 
-         // 循环所有的客户端，给它们发消息
-        foreach($worker->connections as $c)
-       {
-        $c->send(json_encode([
-            'type'=>'users',
-            'users'=>$users
-          ]));
-       } 
+    //      // 循环所有的客户端，给它们发消息
+    //     foreach($worker->connections as $c)
+    //    {
+    //     $c->send(json_encode([
+    //         'type'=>'users',
+    //         'users'=>$users
+    //       ]));
+    //    } 
 
-    };
+    // };
 
     //服务器的启动运行
 

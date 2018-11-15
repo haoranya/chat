@@ -13,13 +13,13 @@
             $this->db = DB::make();
 
         }
-
+         //登录视图的显示
          function login(){
 
             $uname = $_COOKIE['uname'];
 
             $password = $_COOKIE['password'];
-            
+            //判断是否是自动登录
             if($uname!=null&&$password!=null){
 
                 $psm = $this->db->prepare('select * from users where uname=? and password=?');
@@ -39,7 +39,7 @@
             view("login.login");
 
          }
-
+         //完成登陆，跳转的操作
          function dologin(){ 
 
             $uname = $_POST['uname'];
@@ -57,7 +57,7 @@
             if($data){
 
                 setcookie('uname',$uname,time() + 99 * 365 * 24 * 3600,'/');
-
+                //判断用户是否要记住密码
                 if($_POST['remember']=='on'){
                    
                     setcookie('uname',$uname,time()+$seven_day,'/');
@@ -76,7 +76,7 @@
 
             }
          }
-
+         //安全退出登录
          function logout(){
 
             setcookie("uid",'',-1,'/');

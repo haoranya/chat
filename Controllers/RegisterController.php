@@ -16,7 +16,7 @@
             view('register.register');
 
         }
-
+        //注册时对用户名的唯一性的检测  ajax
         function check_uname(){
             
             $uname = $_GET['uname'];
@@ -40,7 +40,7 @@
             }
 
         }
-
+        //注册时对电话号码唯一性的验证  ajax
         function check_tel_num(){
 
             $tel_num = $_GET['tel_num'];
@@ -62,7 +62,7 @@
             }
 
         }
-
+        //完成注册，更新数据库
         function doregister(){
 
             $uname = $_POST['uname'];
