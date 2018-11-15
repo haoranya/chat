@@ -7,8 +7,6 @@
 
       use Workerman\Worker;
 
-      //连接数据库
-
      //实例化worker对象
       $worker = new Worker("websocket://0.0.0.0:9999");//0.0.0.0表示每个IP都可以访问这个服务器，一太电脑有多个IP
 
