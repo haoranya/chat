@@ -19,15 +19,18 @@
       <div id="left">
         <div class="box">
           <!-- 左侧的选择聊天的对象 -->
+          <h4>上线好友:</h4>
+          <br>
           <select v-model="to" name="" id="">
             <option value="">群发所有好友</option>
-            <option v-for="(v,k) in userlist[0]" :value="k">{{k}}=>{{v}}</option>
+            <option v-for="(v,k) in userlist[0]" :value="k">{{v}}</option>
           </select>
-
+          <br>
+          <br>
           <!-- 右侧显示所有好友 -->
           <h3 class="h3 h3_2">所有好友(
             <span class="n_geshu_2"></span>)</h3>
-            
+
           <ul class="ul ul_2">
 
             <?php foreach($users as $user){?>
@@ -46,7 +49,7 @@
           <div id="right_mid"></div>
           <!-- 右侧的登录者信息显示 -->
           <div id="right_foot"></div>
-            
+
           <div class="blank"></div>
         </div>
         <div class="right_box_foot"></div>
@@ -56,47 +59,63 @@
           <div class="my_show">
             <div class="con_box">
               <div class="dandan_liaotian">
-                <img  style="vertical-align:middle;width:30px;margin-left:150px;" src="/images/head.jpg" />
+                <img style="vertical-align:middle;width:30px;margin-left:150px;" src="/images/head.jpg" />
                 <!-- v-if 判断是群聊还是私聊 聊天对象头-->
                 <span v-if=to==''>
-                  <?php echo $_COOKIE['uname']?>
-                  的群聊框
+                  <?php echo $_COOKIE['uname']?> 的群聊框
                 </span>
 
                 <span v-else-if=to!=''>
-                    <?php echo $_COOKIE['uname']?>
-                    对
-                    {{userlist[0][to]}}
-                    的私聊框
-                  </span>
-                  <input type="button" @click="logout()" value="退出" >
+                  <?php echo $_COOKIE['uname']?> 对 {{userlist[0][to]}} 的私聊框
+                </span>
+                <input type="button" @click="logout()" value="退出">
                 <!-- v-if 判断是群聊还是私聊  消息框 -->
-                <li v-if=to=='' v-for="(v,k) in message[0]">
-                  <?=$_COOKIE['uname']?> :
-                    <?=date('Y-m-d:h:i:s')?>
-                      <p style="color:red;">{{v}}</p>
-                </li>
 
-                <li style="float: left;" v-if=to!='' v-for="(v,k) in person">
-                    <template v-for='(v1,k1) in v[obj]'>
+                <li style="float:right;" v-if=to=='' v-for="(v,k) in message">
+
+                    <template v-for='(v1,k1) in v[uid]'>
                       <div style="margin-bottom:40px">
-                          {{userlist[0][to]}} :
-                          <?=date('Y-m-d:h:i:s')?>
-                        <p style="color:red;">{{v1}}</p>
+                        <?=date('Y-m-d:h:i:s')?>
+                          <p style="color:red;">{{v1}}</p>
                       </div>
                     </template>
+
+                  </li>
+
+                  <li v-if=to=='' v-for="(v,k) in message">
+
+                      <div v-if=uid!=v1 v-for='(v1,k1) in uid_arr'>
+                        
+                        <template v-for='(v2,k2) in v[v1]'>
+                       
+                          <div style="margin-bottom:40px">
+                            <?=date('Y-m-d:h:i:s')?>
+                              <p style="color:red;">{{v2}}</p>
+                          </div>
+                        </template>
+                      </div>
+                    </li>
+
+                <li style="float: left;" v-if=to!='' v-for="(v,k) in person">
+                  <template v-for='(v1,k1) in v[obj]'>
+                    <div style="margin-bottom:40px">
+                      {{userlist[0][to]}} :
+                      <?=date('Y-m-d:h:i:s')?>
+                        <p style="color:red;">{{v1}}</p>
+                    </div>
+                  </template>
                 </li>
 
                 <li style="float: right;" v-if=to!='' v-for="(v,k) in person">
                   <template v-for='(v1,k1) in v[self]'>
                     <div style="margin-top:40px;">
-                      
-                        <?=$_COOKIE['uname']?> :
+
+                      <?=$_COOKIE['uname']?> :
                         <?=date('Y-m-d:h:i:s')?>
-                      <p style="color:red;">{{v1}}</p>
+                          <p style="color:red;">{{v1}}</p>
                     </div>
                   </template>
-               </li>
+                </li>
 
               </div>
             </div>
@@ -108,7 +127,7 @@
             <textarea v-model="content" name="" cols="" rows="" id="texterea"></textarea>
           </div>
           <div @click="submit()" id="mid_sand">发送</div>
-          
+
           <div class="blank"></div>
         </div>
         <div class="mid_box"></div>
@@ -117,6 +136,7 @@
   </div>
 </body>
 <script type="text/javascript" src="/js/jquery-1.4.2.min.js"></script>
+<script src="/js/axios.min.js"></script>
 <script type="text/javascript" src="/js/dandan.js"></script>
 <script src="/js/vue.js"></script>
 <script type="text/javascript">
@@ -140,11 +160,15 @@
 
       to: '',//判断是群发还是私聊
 
-      self:'',//自己说的
+      self: '',//自己说的
 
-      obj:'',//对象的回复的
+      obj: '',//对象的回复的
 
-      person:[],//私聊的信息
+      person: [],//私聊的信息
+
+      uid:"<?=$_COOKIE['uid']?>",//当前登陆则会的uid
+
+      uid_arr:[]//保存所有群发信息的用户uid
 
     },
     //钩子函数之一,实例被创建之后被调用,用来初始化数据
@@ -163,46 +187,58 @@
 
     //vue  框架的函数存放在这里
     methods: {
-      error: function(){
-            alert('连接失败！！！本地测试请确保开启服务器端');
-            location.href="/user/userlist";
-        },
+      error: function () {
+        alert('连接失败！！！本地测试请确保开启服务器端');
+        location.href = "http://localhost:8888/user/userlist";
+      },
       //发送按钮
       submit: function () {
-        //判断服务器师傅开启
-        if(this.state==0){
-
-        alert('连接失败！！！,您是否开启服务器？？？');
-
-        location.href="/user/userlist";
-
-      }
 
         //判断是否是群发还是私聊
-        if(this.to==''){
+        if (this.to == '') {
 
-             this.ws.send("all:"+this.content);
+          this.ws.send("all:" + this.content);
 
-             this.content=''; 
+          axios.post('/chat/save_all_chat', {
+            uid: "<?=$_COOKIE['uid']?>",
+            uname: "<?=$_COOKIE['uname']?>",
+            content: this.content
+          })
+            .then(function (response) {
 
-        }else{
+              alert('ok');
+            })
 
-            this.ws.send(this.to+":"+this.content);
+          this.content = '';
 
-            this.content='';
+        } else {
+
+          this.ws.send(this.to + ":" + this.content);
+      
+          axios.post('/chat/save_single_chat', {
+            self_obj: "<?=$_COOKIE['uid']?>" + this.to,
+            uname: "<?=$_COOKIE['uname']?>",
+            content: this.content
+          })
+            .then(function (response) {
+
+              alert('ok');
+            })
+
+          this.content = '';
 
         }
 
       },
-      logout:function(){
+      logout: function () {
         // alert(1);
         this.ws.close();
-        
-        location.href="/user/userlist";
+
+        location.href = "/user/userlist";
 
       },
       //选择好友按钮
-      choose:function(){
+      choose: function () {
 
         alert("此功能需后期完善!");
 
@@ -218,35 +254,42 @@
 
         var data = JSON.parse(e.data);//处理数据
 
-        console.log(data);
-
         //判断数据类型
         if (data.type == 'users') {
-         
+
           this.userlist = [];
 
           this.userlist.push(data.users);
 
-        }else if(data.type == 'message'){
+        } else if (data.type == 'message') {
 
-          this.message = [];
+          // this.message = [];
 
-          this.message.push(data.message)
+          // this.message.push(data.message);
 
-        }else{
+          this.message = data;
+
+          console.log(this.message);
+        }else if(data.type == 'uid_arr'){
+
+          this.uid_arr = data.uid_arr;
+
+          console.log(this.uid_arr);
+
+        } else {
 
           this.person = data;
 
           var own_uid = "<?=$_COOKIE['uid']?>";
 
-          this.self = own_uid+this.to;
+          this.self = own_uid + this.to;
 
-          this.obj = this.to+own_uid;
+          this.obj = this.to + own_uid;
 
           console.log(this.person);
-          
+
         }
-      
+
       },
     }
 

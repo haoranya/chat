@@ -21,8 +21,14 @@
     $connect = [];//保存连接的客户端
 
     $person =[];//保存私聊的信息
+
+    $uid_arr = [];//保存所有连接者的uid
    
     $worker->onConnect = function( $connection ) {
+
+     
+
+
 
         // 为了能够使用 $_GET 接收连接时的参数，我们需要在这里绑定一个 onWebSocketConnect
 
@@ -30,7 +36,7 @@
 
         $connection->onWebSocketConnect = function ($connection, $http_header) {
 
-            global  $worker,$users,$message,$connect;
+            global  $worker,$users,$message,$connect,$uid_arr;
 
                 $own_info = json_decode($_GET['own_info'],true);//接收客户端连接时传过来数据
 
@@ -41,6 +47,15 @@
                 $users[$own_info['uid']]= $own_info['uname'];//保存连接者的名字
 
                 $connect[$own_info['uid']]= $connection;//保存连接者的客户端
+                if(in_array($connection->uid,$uid_arr)){
+
+                }else{
+
+                    $uid_arr[]=$connection->uid;//保存连接者的id
+
+                }
+                
+
                 //连接成功,向所有的上线玩家发送玩家信息
                 foreach($worker->connections as $c){
 
@@ -51,6 +66,11 @@
                         'users'=>$users,
 
                     ]));
+
+                    $c->send(json_encode([
+                        'type'=>'uid_arr',
+                        'uid_arr'=>$uid_arr,
+                      ]));
                     //初始化群聊信息
                     foreach($worker->connections as $c)
                     {
@@ -75,7 +95,9 @@
         //判断当前的而用户时群发还是私发
         if($data_arr[0]=='all'){
             
-            $message[]=$data_arr[1];
+            $message[$connection->uid][]=$data_arr[1];
+
+           
 
          // 循环所有的客户端，响应消息
          foreach($worker->connections as $c)
@@ -84,7 +106,9 @@
               'type'=>'message',
               'message'=>$message,
             ]));
-         }             
+
+           
+         }                         
 
         }else{
             //私聊

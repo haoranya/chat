@@ -30,6 +30,62 @@
             view("chat.chat",['users'=>$users,'own_info'=>json_encode($own_info)]);//加载视图
 
         }
+        //保存私聊信息到数据库
+        function save_single_chat(){
+
+            //由于axios传递的数据时json数据所以不可以使用$_GTE,$_POST接收
+            
+            $post = file_get_contents("php://input");
+
+            $_POST = json_decode($post,TRUE);//把接收到的json数据转换为数组;
+
+            $self_obj = $_POST['self_obj'];
+
+            $uname = $_POST['uname'];
+
+            $content = $_POST['content'];
+
+            $data = $this->db->exec("insert into single_chat(uname,self_obj,content) values('{$uname}',{$self_obj},'{$content}')");
+
+            if($data){
+
+                echo  1;
+
+            }else{
+                echo  0;
+
+            }
+
+        }
+
+        //保存群聊信息到数据库
+
+        function save_all_chat(){
+
+             //由于axios传递的数据时json数据所以不可以使用$_GTE,$_POST接收
+            
+             $post = file_get_contents("php://input");
+
+             $_POST = json_decode($post,TRUE);//把接收到的json数据转换为数组;
+ 
+             $uid = $_POST['uid'];
+ 
+             $uname = $_POST['uname'];
+ 
+             $content = $_POST['content'];
+ 
+             $data = $this->db->exec("insert into all_chat(uname,uid,content) values('{$uname}',{$uid},'{$content}')");
+ 
+             if($data){
+ 
+                 echo  1;
+ 
+             }else{
+                 echo  0;
+ 
+             }
+
+        }
 
     }
 
