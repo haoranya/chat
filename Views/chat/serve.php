@@ -89,8 +89,8 @@
         }else{
             //私聊
             $code = (int)$data_arr[0];//获取私聊对象的uid
-
-            $person[$code][]=$data_arr[1];//存放私聊的消息
+            
+            $person[$connection->uid.$code][]=$data_arr[1];//存放私聊的消息
             //向聊天对象发消息
             $connect[$code]->send(json_encode([
                 'type'=>'person',
@@ -108,22 +108,22 @@
 
     //当有客户端断开连接的时候
 
-    // $worker->onClose = function($connection){
-    //     //从用户表里面删除这个用户
-    //     global $worker,$users;
-    
-    //     unset($users['name'][$connection->id]);
+    $worker->onClose = function($connection){
+        
+        global $worker,$users;
+         // 根据用户id从数组中删除
+       unset($users[$connection->uid]);
+         // 循环所有的客户端，给它们发消息
+    foreach($worker->connections as $c)
+       
+       {
+        $c->send(json_encode([
+            'type'=>'users',
+            'users'=>$users
+          ]));
+       } 
 
-    //      // 循环所有的客户端，给它们发消息
-    //     foreach($worker->connections as $c)
-    //    {
-    //     $c->send(json_encode([
-    //         'type'=>'users',
-    //         'users'=>$users
-    //       ]));
-    //    } 
-
-    // };
+    };
 
     //服务器的启动运行
 

@@ -46,7 +46,7 @@
           <div id="right_mid"></div>
           <!-- 右侧的登录者信息显示 -->
           <div id="right_foot"></div>
-
+            
           <div class="blank"></div>
         </div>
         <div class="right_box_foot"></div>
@@ -56,7 +56,7 @@
           <div class="my_show">
             <div class="con_box">
               <div class="dandan_liaotian">
-                <img style="vertical-align:middle;width:30px;" src="/images/head.jpg" />
+                <img  style="vertical-align:middle;width:30px;margin-left:150px;" src="/images/head.jpg" />
                 <!-- v-if 判断是群聊还是私聊 聊天对象头-->
                 <span v-if=to==''>
                   <?php echo $_COOKIE['uname']?>
@@ -69,7 +69,7 @@
                     {{userlist[0][to]}}
                     的私聊框
                   </span>
-
+                  <input type="button" @click="logout()" value="退出" >
                 <!-- v-if 判断是群聊还是私聊  消息框 -->
                 <li v-if=to=='' v-for="(v,k) in message[0]">
                   <?=$_COOKIE['uname']?> :
@@ -77,13 +77,26 @@
                       <p style="color:red;">{{v}}</p>
                 </li>
 
-                <li v-if=to!='' v-for="(v,k) in person">
-                    <template v-for='(v1,k1) in v[to]'>
-                    <?=$_COOKIE['uname']?> :
-                      <?=date('Y-m-d:h:i:s')?>
+                <li style="float: left;" v-if=to!='' v-for="(v,k) in person">
+                    <template v-for='(v1,k1) in v[obj]'>
+                      <div style="margin-bottom:40px">
+                          {{userlist[0][to]}} :
+                          <?=date('Y-m-d:h:i:s')?>
                         <p style="color:red;">{{v1}}</p>
+                      </div>
                     </template>
                 </li>
+
+                <li style="float: right;" v-if=to!='' v-for="(v,k) in person">
+                  <template v-for='(v1,k1) in v[self]'>
+                    <div style="margin-top:40px;">
+                      
+                        <?=$_COOKIE['uname']?> :
+                        <?=date('Y-m-d:h:i:s')?>
+                      <p style="color:red;">{{v1}}</p>
+                    </div>
+                  </template>
+               </li>
 
               </div>
             </div>
@@ -95,6 +108,7 @@
             <textarea v-model="content" name="" cols="" rows="" id="texterea"></textarea>
           </div>
           <div @click="submit()" id="mid_sand">发送</div>
+          
           <div class="blank"></div>
         </div>
         <div class="mid_box"></div>
@@ -126,6 +140,10 @@
 
       to: '',//判断是群发还是私聊
 
+      self:'',//自己说的
+
+      obj:'',//对象的回复的
+
       person:[],//私聊的信息
 
     },
@@ -137,11 +155,29 @@
       this.ws.onopen = this.open;
       //绑定服务器消息响应监听函数      
       this.ws.onmessage = this.messages;
+      //当哭护短断开链接时
+      this.ws.onclose = this.close;
+      //检测连接是否失败
+      this.ws.onerror = this.error
     },
+
     //vue  框架的函数存放在这里
     methods: {
+      error: function(){
+            alert('连接失败！！！本地测试请确保开启服务器端');
+            location.href="/user/userlist";
+        },
       //发送按钮
       submit: function () {
+        //判断服务器师傅开启
+        if(this.state==0){
+
+        alert('连接失败！！！,您是否开启服务器？？？');
+
+        location.href="/user/userlist";
+
+      }
+
         //判断是否是群发还是私聊
         if(this.to==''){
 
@@ -156,6 +192,13 @@
             this.content='';
 
         }
+
+      },
+      logout:function(){
+        // alert(1);
+        this.ws.close();
+        
+        location.href="/user/userlist";
 
       },
       //选择好友按钮
@@ -174,6 +217,9 @@
       messages: function (e) {
 
         var data = JSON.parse(e.data);//处理数据
+
+        console.log(data);
+
         //判断数据类型
         if (data.type == 'users') {
          
@@ -190,11 +236,18 @@
         }else{
 
           this.person = data;
+
+          var own_uid = "<?=$_COOKIE['uid']?>";
+
+          this.self = own_uid+this.to;
+
+          this.obj = this.to+own_uid;
+
+          console.log(this.person);
           
         }
-
-      }
-
+      
+      },
     }
 
   });
