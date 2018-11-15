@@ -87,6 +87,28 @@
 
         }
 
+        //初始化私聊界面的记录 
+
+        function before_chat(){
+
+               //由于axios传递的数据时json数据所以不可以使用$_GTE,$_POST接收
+            
+               $post = file_get_contents("php://input");
+
+               $_POST = json_decode($post,TRUE);//把接收到的json数据转换为数组;
+   
+               $self_obj = $_POST['self_obj'];
+
+               $psm = $this->db->prepare("select * from single_chat where self_obj=?");
+
+               $psm->execute([$self_obj]);
+
+               $chat_data = $psm->fetchAll(\PDO::FETCH_ASSOC);
+
+               echo json_encode($chat_data);
+   
+        }
+
     }
 
 

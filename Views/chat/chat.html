@@ -21,7 +21,7 @@
           <!-- 左侧的选择聊天的对象 -->
           <h4>上线好友:</h4>
           <br>
-          <select v-model="to" name="" id="">
+          <select @change="selected()" v-model="to" name="" id="">
             <option value="">群发所有好友</option>
             <option v-for="(v,k) in userlist[0]" :value="k">{{v}}</option>
           </select>
@@ -70,32 +70,34 @@
                 </span>
                 <input type="button" @click="logout()" value="退出">
                 <!-- v-if 判断是群聊还是私聊  消息框 -->
-
                 <li style="float:right;" v-if=to=='' v-for="(v,k) in message">
 
-                    <template v-for='(v1,k1) in v[uid]'>
+                  <template v-for='(v1,k1) in v[uid]'>
+
+                    <div style="margin-bottom:40px">
+
+                      <?=date('Y-m-d:h:i:s')?>
+
+                        <p style="color:red;">{{v1}}</p>
+
+                    </div>
+
+                  </template>
+                </li>
+                <li v-if=to=='' v-for="(v,k) in message">
+
+                  <div v-if=uid!=v1 v-for='(v1,k1) in uid_arr'>
+
+                    <template v-for='(v2,k2) in v[v1]'>
+
                       <div style="margin-bottom:40px">
                         <?=date('Y-m-d:h:i:s')?>
-                          <p style="color:red;">{{v1}}</p>
+                          <p style="color:red;">{{v2}}</p>
                       </div>
                     </template>
-
-                  </li>
-
-                  <li v-if=to=='' v-for="(v,k) in message">
-
-                      <div v-if=uid!=v1 v-for='(v1,k1) in uid_arr'>
-                        
-                        <template v-for='(v2,k2) in v[v1]'>
-                       
-                          <div style="margin-bottom:40px">
-                            <?=date('Y-m-d:h:i:s')?>
-                              <p style="color:red;">{{v2}}</p>
-                          </div>
-                        </template>
-                      </div>
-                    </li>
-
+                  </div>
+                </li>
+                <!-- 以下是私聊 -->
                 <li style="float: left;" v-if=to!='' v-for="(v,k) in person">
                   <template v-for='(v1,k1) in v[obj]'>
                     <div style="margin-bottom:40px">
@@ -109,13 +111,13 @@
                 <li style="float: right;" v-if=to!='' v-for="(v,k) in person">
                   <template v-for='(v1,k1) in v[self]'>
                     <div style="margin-top:40px;">
-
                       <?=$_COOKIE['uname']?> :
                         <?=date('Y-m-d:h:i:s')?>
                           <p style="color:red;">{{v1}}</p>
                     </div>
                   </template>
                 </li>
+                <!-- 私聊结束 -->
 
               </div>
             </div>
@@ -166,9 +168,11 @@
 
       person: [],//私聊的信息
 
-      uid:"<?=$_COOKIE['uid']?>",//当前登陆则会的uid
+      uid: "<?=$_COOKIE['uid']?>",//当前登陆则会的uid
 
-      uid_arr:[]//保存所有群发信息的用户uid
+      uid_arr: [],//保存所有群发信息的用户uid
+
+      before_chat:[]//私聊的历史消息
 
     },
     //钩子函数之一,实例被创建之后被调用,用来初始化数据
@@ -197,7 +201,7 @@
         //判断是否是群发还是私聊
         if (this.to == '') {
 
-          this.ws.send("all:" + this.content);
+          this.ws.send("all:" + this.content);//发送消息
 
           axios.post('/chat/save_all_chat', {
             uid: "<?=$_COOKIE['uid']?>",
@@ -206,15 +210,16 @@
           })
             .then(function (response) {
 
-              alert('ok');
-            })
+             
+             
+            })//实时保存数据库
 
-          this.content = '';
+          this.content = '';//清空输入框
 
         } else {
 
           this.ws.send(this.to + ":" + this.content);
-      
+
           axios.post('/chat/save_single_chat', {
             self_obj: "<?=$_COOKIE['uid']?>" + this.to,
             uname: "<?=$_COOKIE['uname']?>",
@@ -222,7 +227,8 @@
           })
             .then(function (response) {
 
-              alert('ok');
+             
+             
             })
 
           this.content = '';
@@ -263,18 +269,11 @@
 
         } else if (data.type == 'message') {
 
-          // this.message = [];
-
-          // this.message.push(data.message);
-
           this.message = data;
 
-          console.log(this.message);
-        }else if(data.type == 'uid_arr'){
+        } else if (data.type == 'uid_arr') {
 
           this.uid_arr = data.uid_arr;
-
-          console.log(this.uid_arr);
 
         } else {
 
@@ -291,6 +290,22 @@
         }
 
       },
+      //获取历史数据
+      selected: function () {
+
+        axios.post('/chat/before_chat', {
+
+          self_obj: "<?=$_COOKIE['uid']?>" + this.to,
+
+        })
+          .then(function (response) {
+
+             var data = response.data;//处理数据
+             this.before_chat = data;
+             console.log(this.before_chat);
+          })
+
+      }
     }
 
   });

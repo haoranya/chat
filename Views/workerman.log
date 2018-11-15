@@ -97,3 +97,55 @@ Stack trace:
 2018-11-15 15:01:01 pid:1 Worker process terminated
 2018-11-15 15:07:24 pid:1 Worker process terminated
 2018-11-15 15:09:23 pid:1 Worker process terminated
+2018-11-15 20:36:29 pid:1 Error: Call to a member function send() on null in C:\Users\Administrator\Desktop\anheng\Views\chat\serve.php:119
+Stack trace:
+#0 [internal function]: {closure}(Object(Workerman\Connection\TcpConnection), ':')
+#1 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Connection\TcpConnection.php(658): call_user_func(Object(Closure), Object(Workerman\Connection\TcpConnection), ':')
+#2 [internal function]: Workerman\Connection\TcpConnection->baseRead(Resource id #34)
+#3 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Events\Select.php(294): call_user_func_array(Array, Array)
+#4 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Worker.php(2321): Workerman\Events\Select->loop()
+#5 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Worker.php(1315): Workerman\Worker->run()
+#6 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Worker.php(1258): Workerman\Worker::forkWorkersForWindows()
+#7 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Worker.php(507): Workerman\Worker::forkWorkers()
+#8 C:\Users\Administrator\Desktop\anheng\Views\chat\serve.php(154): Workerman\Worker::runAll()
+#9 {main}
+2018-11-15 20:36:29 pid:1 Worker process terminated
+2018-11-15 20:37:11 pid:1 Error: Call to a member function send() on null in C:\Users\Administrator\Desktop\anheng\Views\chat\serve.php:119
+Stack trace:
+#0 [internal function]: {closure}(Object(Workerman\Connection\TcpConnection), ':')
+#1 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Connection\TcpConnection.php(658): call_user_func(Object(Closure), Object(Workerman\Connection\TcpConnection), ':')
+#2 [internal function]: Workerman\Connection\TcpConnection->baseRead(Resource id #17)
+#3 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Events\Select.php(294): call_user_func_array(Array, Array)
+#4 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Worker.php(2321): Workerman\Events\Select->loop()
+#5 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Worker.php(1315): Workerman\Worker->run()
+#6 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Worker.php(1258): Workerman\Worker::forkWorkersForWindows()
+#7 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Worker.php(507): Workerman\Worker::forkWorkers()
+#8 C:\Users\Administrator\Desktop\anheng\Views\chat\serve.php(154): Workerman\Worker::runAll()
+#9 {main}
+2018-11-15 20:37:11 pid:1 Worker process terminated
+2018-11-15 20:38:12 pid:1 Error: Call to a member function send() on null in C:\Users\Administrator\Desktop\anheng\Views\chat\serve.php:119
+Stack trace:
+#0 [internal function]: {closure}(Object(Workerman\Connection\TcpConnection), ':')
+#1 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Connection\TcpConnection.php(658): call_user_func(Object(Closure), Object(Workerman\Connection\TcpConnection), ':')
+#2 [internal function]: Workerman\Connection\TcpConnection->baseRead(Resource id #17)
+#3 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Events\Select.php(294): call_user_func_array(Array, Array)
+#4 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Worker.php(2321): Workerman\Events\Select->loop()
+#5 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Worker.php(1315): Workerman\Worker->run()
+#6 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Worker.php(1258): Workerman\Worker::forkWorkersForWindows()
+#7 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Worker.php(507): Workerman\Worker::forkWorkers()
+#8 C:\Users\Administrator\Desktop\anheng\Views\chat\serve.php(154): Workerman\Worker::runAll()
+#9 {main}
+2018-11-15 20:38:12 pid:1 Worker process terminated
+2018-11-15 20:39:00 pid:1 Error: Call to a member function send() on null in C:\Users\Administrator\Desktop\anheng\Views\chat\serve.php:119
+Stack trace:
+#0 [internal function]: {closure}(Object(Workerman\Connection\TcpConnection), ':1')
+#1 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Connection\TcpConnection.php(658): call_user_func(Object(Closure), Object(Workerman\Connection\TcpConnection), ':1')
+#2 [internal function]: Workerman\Connection\TcpConnection->baseRead(Resource id #17)
+#3 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Events\Select.php(294): call_user_func_array(Array, Array)
+#4 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Worker.php(2321): Workerman\Events\Select->loop()
+#5 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Worker.php(1315): Workerman\Worker->run()
+#6 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Worker.php(1258): Workerman\Worker::forkWorkersForWindows()
+#7 C:\Users\Administrator\Desktop\anheng\Views\Workerman-master\Worker.php(507): Workerman\Worker::forkWorkers()
+#8 C:\Users\Administrator\Desktop\anheng\Views\chat\serve.php(154): Workerman\Worker::runAll()
+#9 {main}
+2018-11-15 20:39:00 pid:1 Worker process terminated
