@@ -2,6 +2,7 @@
     namespace controllers;
     use libs\DB;
     class ChatController{
+
         public $db=null;
 
         function __construct(){
@@ -9,7 +10,10 @@
             $this->db = DB::make();
 
         }
+
         function chat(){
+
+            
 
             $uid = $_COOKIE['uid'];
 
