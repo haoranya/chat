@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>网页聊天</title>
+  <link href="/css/dandan.css" rel="stylesheet" media="screen" type="text/css" />
+</head>
+
+<body>
+  <div id="app">
+
+    <div id="mid_top">
+
+    </div>
+
+    <div id="top">头部</div>
+    <div id="body">
+      <div id="left">
+        <div class="box">
+          <select v-model="to" name="" id="">
+            <option value="">群发所有好友</option>
+            <option v-for="(v,k) in userlist[0]" :value="k">{{k}}=>{{v}}</option>
+          </select>
+          <h3 class="h3 h3_2">所有好友(
+            <span class="n_geshu_2"></span>)</h3>
+
+          <ul class="ul ul_2">
+            <?php foreach($users as $user){?>
+            <li @click="choose()">
+              <?=$user['uname']?>
+            </li>
+            <?php }?>
+          </ul>
+        </div>
+        <div class="box_f"></div>
+      </div>
+      <div id="right">
+        <div class="right_box">
+          <div id="right_top">
+          </div>
+          <div id="right_mid"></div>
+          <div id="right_foot">蛋蛋</div>
+          <div class="blank"></div>
+        </div>
+        <div class="right_box_foot"></div>
+      </div>
+      <div id="mid">
+        <div id="mid_con">
+          <div class="my_show">
+            <div class="con_box">
+              <div class="dandan_liaotian">
+                <img style="vertical-align:middle;width:30px;" src="/images/head.jpg" />
+                <span v-if=to==''>
+                  <?php echo $_COOKIE['uname']?>
+                  的群聊框
+                </span>
+                <span v-else-if=to!=''>
+                    <?php echo $_COOKIE['uname']?>
+                    对
+                    {{userlist[0][to]}}
+                    的私聊框
+                  </span>
+                <li v-if=to=='' v-for="(v,k) in message[0]">
+                  <?=$_COOKIE['uname']?> :
+                    <?=date('Y-m-d:h:i:s')?>
+                      <p style="color:red;">{{v}}</p>
+                </li>
+                <li v-if=to!='' v-for="(v,k) in person">
+                    <template v-for='(v1,k1) in v[to]'>
+                    <?=$_COOKIE['uname']?> :
+                      <?=date('Y-m-d:h:i:s')?>
+                        <p style="color:red;">{{v1}}</p>
+                    </template>
+                </li>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="mid_mid"></div>
+        <div id="mid_foot">
+          <div id="mid_say">
+            <textarea v-model="content" name="" cols="" rows="" id="texterea"></textarea>
+          </div>
+          <div @click="submit()" id="mid_sand">发送</div>
+          <div class="blank"></div>
+        </div>
+        <div class="mid_box"></div>
+      </div>
+    </div>
+  </div>
+</body>
+<script type="text/javascript" src="/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="/js/dandan.js"></script>
+<script src="/js/vue.js"></script>
+<script type="text/javascript">
+  //登陆的人
+  $admin_name = "<?php echo $_COOKIE['uname']?>";
+
+
+  const app = new Vue({
+
+    el: "#app",
+
+    data: {
+
+      ws: null,//保存对象
+
+      content: '',//内容
+
+      userlist: [],//所有上线的用户
+
+      message: [],//聊天的消息
+
+      to: '',//判断是群发还是私聊
+
+      person:[],//私聊的信息
+
+      now:''//当前私聊聊天者的信息
+
+    },
+    created: function () {
+
+      this.ws = new WebSocket('ws://127.0.0.1:9999?own_info=' + '<?php echo $own_info; ?>');
+
+      this.ws.onopen = this.open;
+
+      this.ws.onmessage = this.messages;
+    },
+
+    methods: {
+
+      submit: function () {
+
+        if(this.to==''){
+
+             this.ws.send("all:"+this.content);
+
+             this.content=''; 
+
+        }else{
+
+            this.ws.send(this.to+":"+this.content);
+
+            this.content='';
+
+        }
+
+      },
+
+      open: function () {
+
+        alert('欢迎你<?= $_COOKIE["uname"]?>!!!');
+
+      },
+
+      messages: function (e) {
+
+        var data = JSON.parse(e.data);
+       
+        if (data.type == 'users') {
+         
+          this.userlist = [];
+
+          this.userlist.push(data.users);
+
+        }else if(data.type == 'message'){
+
+          this.message = [];
+
+          this.message.push(data.message)
+
+        }else{
+
+          this.person = data;
+
+          console.log(this.person.person);
+          
+        }
+
+      }
+
+    }
+
+  });
+
+</script>
+
+</html>

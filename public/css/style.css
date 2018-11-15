@@ -1,0 +1,30 @@
+.page{
+
+    width: 440px;
+
+    height: 200px;
+
+    border:1px solid #333;
+
+    margin:200px auto;
+
+    padding:30px;
+
+    text-align:center;
+
+}
+
+input{
+
+    margin-left:10px;
+
+}
+
+span{
+
+    display:inline-block;
+
+    width: 60px;
+
+}
+

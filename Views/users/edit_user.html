@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="page">
+
+        <form action="/user/update?uid=<?=$user['uid']?>" method="post" id="form">
+            <input type="hidden" name="uid" value="<?=$user['uid']?>" id="uid">
+            <span>用户名:</span><input type="text" name="uname" id="uname" value="<?=$user['uname']?>"><br>
+            <span style="color:red;width:200px;" id="error_uname"></span><br>
+
+            <span>手机号:</span><input type="text" name="tel_num" id="tel_num" value="<?=$user['tel_num']?>"><br>
+            <span style="color:red;width:200px;" id="error_tel_num"></span><br>
+
+            <span>旧密码:</span><input type="text" name="old_password" id="old_password"><br>
+            <span style="color:red;width:200px;" id="error_old_password"></span><br>
+
+            <span>新密码:</span><input type="password" name="new_password" id="new_password"><br>
+            <span style="color:red;width:200px;" id="error_new_password"></span><br>
+            
+            <input type="button" onclick="hit()" value="确认修改">
+
+        </form>
+
+    </div>
+</body>
+</html>
+<script src='/js/jquery.min.js'></script>
+<script src='/js/edit.js'></script>
